@@ -32,7 +32,21 @@ The Wolf vs. Rabbit game will have the following functionality:
 
 
 
-## Technologies
+## Architecture & Technologies
+
+- board.js will track the status of the current board; where everything is.
+
+- tile.js will track the amount of grass left on a tile.
+
+- wolf.js will track a wolf's hunger level, location.
+
+- rabbit.js will track a rabbit's hunger level & location.
+
+- game.js tracks score turn logic.
+
+
+This game will be simple enough to run with vanilla JavaScript with a Canvas
+implementation.
 
 
 
