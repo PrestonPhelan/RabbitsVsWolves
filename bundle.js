@@ -45,12 +45,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const GameView = __webpack_require__(5);
+	const GameView = __webpack_require__(6);
+	const Options = __webpack_require__(7);
 	
 	document.addEventListener("DOMContentLoaded", () => {
 	  const canvas = document.getElementById("game-canvas");
-	  canvas.width = Game.DIM_X;
-	  canvas.height = Game.DIM_Y;
+	  canvas.width = Options.DIM_X;
+	  canvas.height = Options.DIM_Y;
 	
 	  const ctx = canvas.getContext("2d");
 	  const game = new Game(7, 3);
@@ -64,7 +65,8 @@
 
 	const Prey = __webpack_require__(2);
 	const Predator = __webpack_require__(4);
-	const Tile = __webpack_require__(6);
+	const Tile = __webpack_require__(5);
+	const Options = __webpack_require__(7);
 	
 	class Game {
 	  constructor(prey, predators) {
@@ -80,9 +82,9 @@
 	  }
 	
 	  createTiles() {
-	    for (let i = 0; i < Game.DIM_X / Game.TILE_SIZE; i++) {
-	      for(let j = 0; j < Game.DIM_Y / Game.TILE_SIZE; j++) {
-	        this.tiles.push(new Tile([i, j], Game.TILE_SIZE));
+	    for (let i = 0; i < Options.DIM_X / Options.TILE_SIZE; i++) {
+	      for(let j = 0; j < Options.DIM_Y / Options.TILE_SIZE; j++) {
+	        this.tiles.push(new Tile([i, j], Options.TILE_SIZE));
 	      }
 	    }
 	  }
@@ -102,7 +104,7 @@
 	  }
 	
 	  draw(ctx) {
-	    ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
+	    ctx.clearRect(0, 0, Options.DIM_X, Options.DIM_Y);
 	    // ctx.fillStyle = Game.BG_COLOR;
 	    // ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
 	
@@ -113,11 +115,11 @@
 	
 	}
 	
-	Game.BG_COLOR = "#000000";
-	Game.DIM_X = 1000;
-	Game.DIM_Y = 600;
-	Game.TILE_SIZE = 20;
-	Game.FPS = 32;
+	// Game.BG_COLOR = "#000000";
+	// Game.DIM_X = 1000;
+	// Game.DIM_Y = 600;
+	// Game.TILE_SIZE = 20;
+	// Game.FPS = 32;
 	
 	module.exports = Game;
 
@@ -142,11 +144,15 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	const Options = __webpack_require__(7);
+	
+	const getRandomInt = size => Math.floor(Math.random() * size);
+	
 	class Animal {
 	  constructor(options) {
-	    this.pos = [100, 100];
+	    this.pos = [getRandomInt(Options.DIM_X), getRandomInt(Options.DIM_Y)];
 	    this.food = 5;
 	    this.alive = true;
 	
@@ -159,7 +165,7 @@
 	  }
 	
 	  starved() {
-	    this.food === 0;
+	    return this.food === 0;
 	  }
 	
 	  death() {
@@ -194,7 +200,7 @@
 	  constructor(options = {}) {
 	    super(options);
 	    this.speed = 2;
-	    this.radius = 25;
+	    this.radius = 10;
 	    this.color = "#ff0000";
 	
 	    this.prevMove = [0, 0];
@@ -213,22 +219,6 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	class GameView {
-	  constructor(game, ctx) {
-	    this.ctx = ctx;
-	    this.game = game;
-	
-	    this.game.draw(this.ctx);
-	  }
-	}
-	
-	module.exports = GameView;
-
-
-/***/ },
-/* 6 */
 /***/ function(module, exports) {
 
 	class Tile {
@@ -272,6 +262,35 @@
 	}
 	
 	module.exports = Tile;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	class GameView {
+	  constructor(game, ctx) {
+	    this.ctx = ctx;
+	    this.game = game;
+	
+	    this.game.draw(this.ctx);
+	  }
+	}
+	
+	module.exports = GameView;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	const Options = {
+	  DIM_X: 1000,
+	  DIM_Y: 600,
+	  TILE_SIZE: 20
+	};
+	
+	module.exports = Options;
 
 
 /***/ }

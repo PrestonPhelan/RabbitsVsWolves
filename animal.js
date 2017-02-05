@@ -1,6 +1,10 @@
+const Options = require('./options');
+
+const getRandomInt = size => Math.floor(Math.random() * size);
+
 class Animal {
   constructor(options) {
-    this.pos = [100, 100];
+    this.pos = [getRandomInt(Options.DIM_X), getRandomInt(Options.DIM_Y)];
     this.food = 5;
     this.alive = true;
 
@@ -13,7 +17,7 @@ class Animal {
   }
 
   starved() {
-    this.food === 0;
+    return this.food === 0;
   }
 
   death() {

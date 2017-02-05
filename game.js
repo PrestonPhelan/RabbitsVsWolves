@@ -1,6 +1,7 @@
 const Prey = require('./prey');
 const Predator = require('./predator');
 const Tile = require('./tile');
+const Options = require('./options');
 
 class Game {
   constructor(prey, predators) {
@@ -16,9 +17,9 @@ class Game {
   }
 
   createTiles() {
-    for (let i = 0; i < Game.DIM_X / Game.TILE_SIZE; i++) {
-      for(let j = 0; j < Game.DIM_Y / Game.TILE_SIZE; j++) {
-        this.tiles.push(new Tile([i, j], Game.TILE_SIZE));
+    for (let i = 0; i < Options.DIM_X / Options.TILE_SIZE; i++) {
+      for(let j = 0; j < Options.DIM_Y / Options.TILE_SIZE; j++) {
+        this.tiles.push(new Tile([i, j], Options.TILE_SIZE));
       }
     }
   }
@@ -38,7 +39,7 @@ class Game {
   }
 
   draw(ctx) {
-    ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
+    ctx.clearRect(0, 0, Options.DIM_X, Options.DIM_Y);
     // ctx.fillStyle = Game.BG_COLOR;
     // ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
 
@@ -49,10 +50,10 @@ class Game {
 
 }
 
-Game.BG_COLOR = "#000000";
-Game.DIM_X = 1000;
-Game.DIM_Y = 600;
-Game.TILE_SIZE = 20;
-Game.FPS = 32;
+// Game.BG_COLOR = "#000000";
+// Game.DIM_X = 1000;
+// Game.DIM_Y = 600;
+// Game.TILE_SIZE = 20;
+// Game.FPS = 32;
 
 module.exports = Game;

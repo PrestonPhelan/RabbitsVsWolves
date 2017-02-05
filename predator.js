@@ -4,7 +4,7 @@ class Predator extends Animal {
   constructor(options = {}) {
     super(options);
     this.speed = 2;
-    this.radius = 25;
+    this.radius = 10;
     this.color = "#ff0000";
 
     this.prevMove = [0, 0];
