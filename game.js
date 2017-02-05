@@ -16,9 +16,9 @@ class Game {
   }
 
   createTiles() {
-    for (let i = 0; i < Game.DIM_X / 20; i++) {
-      for(let j = 0; j < Game.DIM_Y / 20; j++) {
-        this.tiles.push(new Tile([i, j]));
+    for (let i = 0; i < Game.DIM_X / Game.TILE_SIZE; i++) {
+      for(let j = 0; j < Game.DIM_Y / Game.TILE_SIZE; j++) {
+        this.tiles.push(new Tile([i, j], Game.TILE_SIZE));
       }
     }
   }
@@ -52,6 +52,7 @@ class Game {
 Game.BG_COLOR = "#000000";
 Game.DIM_X = 1000;
 Game.DIM_Y = 600;
+Game.TILE_SIZE = 20;
 Game.FPS = 32;
 
 module.exports = Game;

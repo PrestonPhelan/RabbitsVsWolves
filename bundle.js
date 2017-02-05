@@ -80,9 +80,9 @@
 	  }
 	
 	  createTiles() {
-	    for (let i = 0; i < Game.DIM_X / 20; i++) {
-	      for(let j = 0; j < Game.DIM_Y / 20; j++) {
-	        this.tiles.push(new Tile([i, j]));
+	    for (let i = 0; i < Game.DIM_X / Game.TILE_SIZE; i++) {
+	      for(let j = 0; j < Game.DIM_Y / Game.TILE_SIZE; j++) {
+	        this.tiles.push(new Tile([i, j], Game.TILE_SIZE));
 	      }
 	    }
 	  }
@@ -116,6 +116,7 @@
 	Game.BG_COLOR = "#000000";
 	Game.DIM_X = 1000;
 	Game.DIM_Y = 600;
+	Game.TILE_SIZE = 20;
 	Game.FPS = 32;
 	
 	module.exports = Game;
@@ -231,8 +232,9 @@
 /***/ function(module, exports) {
 
 	class Tile {
-	  constructor(pos) {
+	  constructor(pos, size) {
 	    this.pos = pos;
+	    this.tile_size = size;
 	    this.grass = 20;
 	  }
 	
@@ -251,9 +253,9 @@
 	  draw(ctx) {
 	    ctx.fillStyle = this.getColor();
 	
-	    const startPos = [this.pos[0]*20, this.pos[1]*20];
+	    const startPos = [this.pos[0]*this.tile_size, this.pos[1]*this.tile_size];
 	
-	    ctx.rect(startPos[0], startPos[1], 19, 19);
+	    ctx.rect(startPos[0], startPos[1], this.tile_size - 1, this.tile_size - 1);
 	    ctx.fill();
 	  }
 	
