@@ -11,6 +11,10 @@
     - ?Berserk-like state, faster move speed when close to death?
   - Differences in Eat methods
 
+* Hero (inherit from Rabbit)
+  - Additional functionality from being player character
+  - Overwrite reproduction cooldown
+
 * Tile
   - Tracks amount of grass in its location
 

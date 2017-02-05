@@ -64,6 +64,7 @@
 
 	const Prey = __webpack_require__(2);
 	const Predator = __webpack_require__(4);
+	const Tile = __webpack_require__(6);
 	
 	class Game {
 	  constructor(prey, predators) {
@@ -71,9 +72,19 @@
 	    this.predators = [];
 	    this.tiles = [];
 	
+	    this.createTiles();
 	    this.addAnimals(prey, predators);
 	    console.log(this.prey);
 	    console.log(this.predators);
+	    console.log(this.tiles);
+	  }
+	
+	  createTiles() {
+	    for (let i = 0; i < Game.DIM_X / 20; i++) {
+	      for(let j = 0; j < Game.DIM_Y / 20; j++) {
+	        this.tiles.push(new Tile([i, j]));
+	      }
+	    }
 	  }
 	
 	  addAnimals(prey, predators) {
@@ -87,13 +98,13 @@
 	  }
 	
 	  allObjects() {
-	    return this.prey.concat(this.predators);
+	    return this.tiles.concat(this.prey).concat(this.predators);
 	  }
 	
 	  draw(ctx) {
 	    ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
-	    ctx.fillStyle = Game.BG_COLOR;
-	    ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
+	    // ctx.fillStyle = Game.BG_COLOR;
+	    // ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
 	
 	    this.allObjects().forEach((object) => {
 	      object.draw(ctx);
@@ -106,7 +117,6 @@
 	Game.DIM_X = 1000;
 	Game.DIM_Y = 600;
 	Game.FPS = 32;
-	Game.NUM_ASTEROIDS = 10;
 	
 	module.exports = Game;
 
@@ -135,14 +145,33 @@
 
 	class Animal {
 	  constructor(options) {
-	    this.pos = [0, 0];
+	    this.pos = [100, 100];
 	    this.food = 5;
 	    this.alive = true;
+	
+	    this.onReproductionCooldown = false;
+	    this.ReproductionCooldownCounter = 0;
+	  }
+	
+	  eat(val) {
+	    this.food += val;
+	  }
+	
+	  starved() {
+	    this.food === 0;
+	  }
+	
+	  death() {
+	    this.alive = false;
+	    this.counter = 0;
+	  }
+	
+	  deathCounter() {
+	    this.counter += 1;
 	  }
 	
 	  draw(ctx) {
 	    ctx.fillStyle = this.color;
-	
 	    ctx.beginPath();
 	    ctx.arc(
 	      this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true
@@ -166,7 +195,16 @@
 	    this.speed = 2;
 	    this.radius = 25;
 	    this.color = "#ff0000";
+	
+	    this.prevMove = [0, 0];
 	  }
+	
+	  //AI on Deciding Move
+	    //Sniff?
+	    //Starving?
+	
+	  //Check if previous move is same direction as current
+	
 	}
 	
 	module.exports = Predator;
@@ -186,6 +224,52 @@
 	}
 	
 	module.exports = GameView;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	class Tile {
+	  constructor(pos) {
+	    this.pos = pos;
+	    this.grass = 20;
+	  }
+	
+	  getColor() {
+	    if (this.grass === 0) {
+	      //Dead Color
+	    } else if (this.grass <= 10) {
+	      //Light Green
+	    } else if (this.grass <= 20) {
+	      return "#00ff00";
+	    } else if (this.grass <= 30) {
+	      //Dark Green
+	    }
+	  }
+	
+	  draw(ctx) {
+	    ctx.fillStyle = this.getColor();
+	
+	    const startPos = [this.pos[0]*20, this.pos[1]*20];
+	
+	    ctx.rect(startPos[0], startPos[1], 19, 19);
+	    ctx.fill();
+	  }
+	
+	  eaten() {
+	    this.grass -= 10;
+	    if (this.grass < 0) {
+	      this.grass = 0;
+	    }
+	  }
+	
+	  grow() {
+	    if (this.grass < 30) this.grass += 1;
+	  }
+	}
+	
+	module.exports = Tile;
 
 
 /***/ }
