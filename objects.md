@@ -8,6 +8,7 @@
 * Rabbit & Wolf Subclasses (inherit from Animal)
   - Speed Variables
     - Make linear speed the same, but slower turn speed for wolf
+    - ?Berserk-like state, faster move speed when close to death?
   - Differences in Eat methods
 
 * Tile
