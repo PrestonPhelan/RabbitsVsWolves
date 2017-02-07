@@ -21,7 +21,6 @@ class Prey extends Animal {
     //TODO Death Counter check, remove
 
     this.move();
-    console.log("Hit Prey Update");
   }
 }
 

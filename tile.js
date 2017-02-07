@@ -9,24 +9,16 @@ class Tile {
   }
 
   getColor() {
-    if (this.grass === 0) {
-      return "#ffcc99";
-    } else if (this.grass <= 10) {
-      return "#ccff99";
-    } else if (this.grass <= 20) {
-      return "#00ff00";
-    } else if (this.grass <= 30) {
-      return "#006600";
-    }
-  }
-
-  draw(ctx) {
-
-      ctx.fillStyle = this.getColor();
-
-      ctx.rect(this.startPos[0], this.startPos[1], this.tile_size - 1, this.tile_size - 1);
-      ctx.fill();
-
+    return "#d3d3d3";
+    // if (this.grass === 0) {
+    //   return "#ffcc99";
+    // } else if (this.grass <= 10) {
+    //   return "#ccff99";
+    // } else if (this.grass <= 20) {
+    //   return "#00ff00";
+    // } else if (this.grass <= 30) {
+    //   return "#006600";
+    // }
   }
 
   eaten() {

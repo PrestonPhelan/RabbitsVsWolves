@@ -35,7 +35,8 @@ class Game {
   }
 
   updateObjects(ctx) {
-    this.allObjects().forEach( object => object.update() );
+    this.allObjects().forEach( object =>
+      object.update(this.prey, this.predators) );
   }
 }
 

@@ -12,12 +12,13 @@ class Animal {
     this.ReproductionCooldownCounter = 0;
 
     //TODO Remove this
-    this.movement = [1, 1];
+    this.movement = [0, 0];
   }
 
   move() {
     this.pos[0] += this.movement[0] * this.speed;
     this.pos[1] += this.movement[1] * this.speed;
+    // console.log(this.pos);
   }
 
   eat(val) {

@@ -15,7 +15,6 @@ class GameView {
   animate() {
     this.game.updateObjects();
     this.game.draw(this.ctx);
-    console.log("Updated");
 
     requestAnimationFrame(this.animate.bind(this));
   }
