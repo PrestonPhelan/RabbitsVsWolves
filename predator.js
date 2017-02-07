@@ -10,6 +10,21 @@ class Predator extends Animal {
     this.prevMove = [0, 0];
   }
 
+  update() {
+    if (this.starved()) {
+      this.death();
+      return;
+    }
+
+    if (!this.alive) {
+      this.deathCounter();
+    }
+
+    //TODO Death Counter check, remove
+
+    this.move();
+  }
+
   //AI on Deciding Move
     //Sniff?
     //Starving?

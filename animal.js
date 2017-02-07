@@ -10,6 +10,14 @@ class Animal {
 
     this.onReproductionCooldown = false;
     this.ReproductionCooldownCounter = 0;
+
+    //TODO Remove this
+    this.movement = [1, 1];
+  }
+
+  move() {
+    this.pos[0] += this.movement[0] * this.speed;
+    this.pos[1] += this.movement[1] * this.speed;
   }
 
   eat(val) {

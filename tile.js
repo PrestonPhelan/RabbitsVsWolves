@@ -2,28 +2,31 @@ class Tile {
   constructor(pos, size) {
     this.pos = pos;
     this.tile_size = size;
-    this.grass = 20;
+    this.grass = 15;
+    this.markedForUpdate = true;
+
+    this.startPos = [this.pos[0]*this.tile_size, this.pos[1]*this.tile_size];
   }
 
   getColor() {
     if (this.grass === 0) {
-      //Dead Color
+      return "#ffcc99";
     } else if (this.grass <= 10) {
-      //Light Green
+      return "#ccff99";
     } else if (this.grass <= 20) {
       return "#00ff00";
     } else if (this.grass <= 30) {
-      //Dark Green
+      return "#006600";
     }
   }
 
   draw(ctx) {
-    ctx.fillStyle = this.getColor();
 
-    const startPos = [this.pos[0]*this.tile_size, this.pos[1]*this.tile_size];
+      ctx.fillStyle = this.getColor();
 
-    ctx.rect(startPos[0], startPos[1], this.tile_size - 1, this.tile_size - 1);
-    ctx.fill();
+      ctx.rect(this.startPos[0], this.startPos[1], this.tile_size - 1, this.tile_size - 1);
+      ctx.fill();
+
   }
 
   eaten() {
@@ -35,6 +38,13 @@ class Tile {
 
   grow() {
     if (this.grass < 30) this.grass += 1;
+    if (this.grass === 10 || this.grass === 20) {
+      this.markedForUpdate = true;
+    }
+  }
+
+  update() {
+    this.grow();
   }
 }
 

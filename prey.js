@@ -7,6 +7,22 @@ class Prey extends Animal {
     this.radius = 10;
     this.color = "#228B22";
   }
+
+  update() {
+    if (this.starved()) {
+      this.death();
+      return;
+    }
+
+    if (!this.alive) {
+      this.deathCounter();
+    }
+
+    //TODO Death Counter check, remove
+
+    this.move();
+    console.log("Hit Prey Update");
+  }
 }
 
 module.exports = Prey;

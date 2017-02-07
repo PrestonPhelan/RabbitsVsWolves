@@ -45,8 +45,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const GameView = __webpack_require__(6);
-	const Options = __webpack_require__(7);
+	const GameView = __webpack_require__(7);
+	const Options = __webpack_require__(4);
 	
 	document.addEventListener("DOMContentLoaded", () => {
 	  const canvas = document.getElementById("game-canvas");
@@ -55,7 +55,8 @@
 	
 	  const ctx = canvas.getContext("2d");
 	  const game = new Game(7, 3);
-	  new GameView(game, ctx);
+	  const gameView = new GameView(game, ctx);
+	  gameView.start();
 	});
 
 
@@ -64,29 +65,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Prey = __webpack_require__(2);
-	const Predator = __webpack_require__(4);
-	const Tile = __webpack_require__(5);
-	const Options = __webpack_require__(7);
+	const Predator = __webpack_require__(5);
+	const Options = __webpack_require__(4);
+	const Board = __webpack_require__(8);
 	
 	class Game {
 	  constructor(prey, predators) {
 	    this.prey = [];
 	    this.predators = [];
-	    this.tiles = [];
+	    this.board = new Board();
 	
-	    this.createTiles();
 	    this.addAnimals(prey, predators);
-	    console.log(this.prey);
-	    console.log(this.predators);
-	    console.log(this.tiles);
-	  }
-	
-	  createTiles() {
-	    for (let i = 0; i < Options.DIM_X / Options.TILE_SIZE; i++) {
-	      for(let j = 0; j < Options.DIM_Y / Options.TILE_SIZE; j++) {
-	        this.tiles.push(new Tile([i, j], Options.TILE_SIZE));
-	      }
-	    }
 	  }
 	
 	  addAnimals(prey, predators) {
@@ -100,7 +89,7 @@
 	  }
 	
 	  allObjects() {
-	    return this.tiles.concat(this.prey).concat(this.predators);
+	    return [this.board].concat(this.prey).concat(this.predators);
 	  }
 	
 	  draw(ctx) {
@@ -111,6 +100,9 @@
 	    });
 	  }
 	
+	  updateObjects(ctx) {
+	    this.allObjects().forEach( object => object.update() );
+	  }
 	}
 	
 	module.exports = Game;
@@ -129,6 +121,22 @@
 	    this.radius = 10;
 	    this.color = "#228B22";
 	  }
+	
+	  update() {
+	    if (this.starved()) {
+	      this.death();
+	      return;
+	    }
+	
+	    if (!this.alive) {
+	      this.deathCounter();
+	    }
+	
+	    //TODO Death Counter check, remove
+	
+	    this.move();
+	    console.log("Hit Prey Update");
+	  }
 	}
 	
 	module.exports = Prey;
@@ -138,7 +146,7 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const Options = __webpack_require__(7);
+	const Options = __webpack_require__(4);
 	
 	const getRandomInt = size => Math.floor(Math.random() * size);
 	
@@ -150,6 +158,14 @@
 	
 	    this.onReproductionCooldown = false;
 	    this.ReproductionCooldownCounter = 0;
+	
+	    //TODO Remove this
+	    this.movement = [1, 1];
+	  }
+	
+	  move() {
+	    this.pos[0] += this.movement[0] * this.speed;
+	    this.pos[1] += this.movement[1] * this.speed;
 	  }
 	
 	  eat(val) {
@@ -184,6 +200,20 @@
 
 /***/ },
 /* 4 */
+/***/ function(module, exports) {
+
+	const Options = {
+	  DIM_X: 1000,
+	  DIM_Y: 600,
+	  TILE_SIZE: 20,
+	  FPS: 32
+	};
+	
+	module.exports = Options;
+
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const Animal = __webpack_require__(3);
@@ -198,6 +228,21 @@
 	    this.prevMove = [0, 0];
 	  }
 	
+	  update() {
+	    if (this.starved()) {
+	      this.death();
+	      return;
+	    }
+	
+	    if (!this.alive) {
+	      this.deathCounter();
+	    }
+	
+	    //TODO Death Counter check, remove
+	
+	    this.move();
+	  }
+	
 	  //AI on Deciding Move
 	    //Sniff?
 	    //Starving?
@@ -210,35 +255,38 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	class Tile {
 	  constructor(pos, size) {
 	    this.pos = pos;
 	    this.tile_size = size;
-	    this.grass = 20;
+	    this.grass = 15;
+	    this.markedForUpdate = true;
+	
+	    this.startPos = [this.pos[0]*this.tile_size, this.pos[1]*this.tile_size];
 	  }
 	
 	  getColor() {
 	    if (this.grass === 0) {
-	      //Dead Color
+	      return "#ffcc99";
 	    } else if (this.grass <= 10) {
-	      //Light Green
+	      return "#ccff99";
 	    } else if (this.grass <= 20) {
 	      return "#00ff00";
 	    } else if (this.grass <= 30) {
-	      //Dark Green
+	      return "#006600";
 	    }
 	  }
 	
 	  draw(ctx) {
-	    ctx.fillStyle = this.getColor();
 	
-	    const startPos = [this.pos[0]*this.tile_size, this.pos[1]*this.tile_size];
+	      ctx.fillStyle = this.getColor();
 	
-	    ctx.rect(startPos[0], startPos[1], this.tile_size - 1, this.tile_size - 1);
-	    ctx.fill();
+	      ctx.rect(this.startPos[0], this.startPos[1], this.tile_size - 1, this.tile_size - 1);
+	      ctx.fill();
+	
 	  }
 	
 	  eaten() {
@@ -250,6 +298,13 @@
 	
 	  grow() {
 	    if (this.grass < 30) this.grass += 1;
+	    if (this.grass === 10 || this.grass === 20) {
+	      this.markedForUpdate = true;
+	    }
+	  }
+	
+	  update() {
+	    this.grow();
 	  }
 	}
 	
@@ -257,15 +312,29 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	class GameView {
 	  constructor(game, ctx) {
 	    this.ctx = ctx;
 	    this.game = game;
+	    this.gameOver = false;
 	
 	    this.game.draw(this.ctx);
+	    // this.start();
+	  }
+	
+	  start() {
+	    requestAnimationFrame(this.animate.bind(this));
+	  }
+	
+	  animate() {
+	    this.game.updateObjects();
+	    this.game.draw(this.ctx);
+	    console.log("Updated");
+	
+	    requestAnimationFrame(this.animate.bind(this));
 	  }
 	}
 	
@@ -273,17 +342,40 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports) {
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
 
-	const Options = {
-	  DIM_X: 1000,
-	  DIM_Y: 600,
-	  TILE_SIZE: 20,
-	  FPS: 32
-	};
+	const Tile = __webpack_require__(6);
+	const Options = __webpack_require__(4);
 	
-	module.exports = Options;
+	class Board {
+	  constructor() {
+	    this.tiles = [];
+	
+	    this.createTiles(0);
+	  }
+	
+	  createTiles() {
+	    for (let i = 0; i < Options.DIM_X / Options.TILE_SIZE; i++) {
+	      for(let j = 0; j < Options.DIM_Y / Options.TILE_SIZE; j++) {
+	        this.tiles.push(new Tile([i, j], Options.TILE_SIZE));
+	      }
+	    }
+	  }
+	
+	  draw(ctx) {
+	    this.tiles.forEach( tile => {
+	      ctx.fillStyle = tile.getColor();
+	      ctx.fillRect(tile.startPos[0], tile.startPos[1], Options.TILE_SIZE -1, Options.TILE_SIZE - 1);
+	    });
+	  }
+	
+	  update() {
+	    this.tiles.forEach( tile => tile.update() );
+	  }
+	}
+	
+	module.exports = Board;
 
 
 /***/ }
