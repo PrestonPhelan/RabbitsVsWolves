@@ -135,12 +135,32 @@
 	        closestPredator = predator;
 	      }
 	    });
-	
-	    this.movement =
-	      Util.escapeAngle(this.pos, closestPredator.pos, closestPredator.movement);
 	    //If wolf is close enough, run away
+	    if (closestDistance <= 100) {
+	      this.movement =
+	        Util.escapeAngle(
+	          this.pos,
+	          closestPredator.pos,
+	          closestPredator.movement);
+	      return;
+	    } else {
+	      //Else look for closest mate
+	      closestDistance = null;
+	      let closestMate;
+	      prey.forEach( mate => {
+	        if (mate === this) {
+	          return;
+	        }
+	        let distance = Util.calcDistance(mate.pos, this.pos);
+	        if (!closestDistance || distance < closestDistance) {
+	          closestDistance = distance;
+	          closestMate = mate;
+	        }
+	      });
 	
-	    //Else look for closest mate
+	      this.movement =
+	        Util.pursuitAngle(this.pos, closestMate.pos, closestMate.movement);
+	    }
 	  }
 	
 	  update(prey, predators) {
