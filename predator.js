@@ -41,7 +41,6 @@ class Predator extends Animal {
 
     this.movement =
       Util.pursuitAngle(this.pos, closestAnimal.pos, closestAnimal.movement);
-    console.log(Util.pursuitAngle(this.pos, closestAnimal.pos));
   }
 
   update(prey, predators) {

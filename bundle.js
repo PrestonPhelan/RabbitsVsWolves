@@ -54,7 +54,7 @@
 	  canvas.height = Options.DIM_Y;
 	
 	  const ctx = canvas.getContext("2d");
-	  const game = new Game(1, 1);
+	  const game = new Game(7, 3);
 	  const gameView = new GameView(game, ctx);
 	  gameView.start();
 	});
@@ -114,6 +114,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Animal = __webpack_require__(3);
+	const Util = __webpack_require__(9);
 	
 	class Prey extends Animal {
 	  constructor(options = {}) {
@@ -123,7 +124,26 @@
 	    this.color = "#228B22";
 	  }
 	
-	  update() {
+	  getMove(prey, predators) {
+	    //Run from wolf if necessary
+	    let closestDistance;
+	    let closestPredator;
+	    predators.forEach( predator => {
+	      let distance = Util.calcDistance(predator.pos, this.pos);
+	      if (!closestDistance || distance < closestDistance) {
+	        closestDistance = distance;
+	        closestPredator = predator;
+	      }
+	    });
+	
+	    this.movement =
+	      Util.escapeAngle(this.pos, closestPredator.pos, closestPredator.movement);
+	    //If wolf is close enough, run away
+	
+	    //Else look for closest mate
+	  }
+	
+	  update(prey, predators) {
 	    if (this.starved()) {
 	      this.death();
 	      return;
@@ -132,6 +152,7 @@
 	    if (!this.alive) {
 	      this.deathCounter();
 	    }
+	    this.getMove(prey, predators);
 	
 	    //TODO Death Counter check, remove
 	
@@ -166,7 +187,6 @@
 	  move() {
 	    this.pos[0] += this.movement[0] * this.speed;
 	    this.pos[1] += this.movement[1] * this.speed;
-	    // console.log(this.pos);
 	  }
 	
 	  eat(val) {
@@ -260,7 +280,6 @@
 	
 	    this.movement =
 	      Util.pursuitAngle(this.pos, closestAnimal.pos, closestAnimal.movement);
-	    console.log(Util.pursuitAngle(this.pos, closestAnimal.pos));
 	  }
 	
 	  update(prey, predators) {
@@ -416,14 +435,23 @@
 	    );
 	  },
 	  pursuitAngle: (startPos, targetPos, targetMove) => {
-	    console.log(targetPos);
-	    console.log(startPos);
+	    if (targetPos[1] - startPos[1] === 0) { return [1, 0]; }
 	    const ratio = (targetPos[0] - startPos[0])/(targetPos[1] - startPos[1]);
 	    let yVal = Math.sqrt(1 / (Math.pow(ratio, 2) + 1));
 	    if (targetPos[1] - startPos[1] < 0) {
 	      yVal = yVal * (-1);
 	    }
 	    const xVal = ratio * yVal;
+	    return [xVal, yVal];
+	  },
+	  escapeAngle: (startPos, predatorPos, targetMove) => {
+	    if (predatorPos[1] - startPos[1] === 0) { return [1, 0]; }
+	    const ratio = (predatorPos[0] - startPos[0])/(predatorPos[1] - startPos[1]);
+	    let yVal = Math.sqrt(1 / (Math.pow(ratio, 2) + 1));
+	    if (predatorPos[1] - startPos[1] > 0) {
+	      yVal = yVal * (-1);
+	    }
+	    const xVal = ratio * yVal * (-1);
 	    return [xVal, yVal];
 	  }
 	};

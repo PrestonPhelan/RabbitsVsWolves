@@ -5,14 +5,23 @@ const Util = {
     );
   },
   pursuitAngle: (startPos, targetPos, targetMove) => {
-    console.log(targetPos);
-    console.log(startPos);
+    if (targetPos[1] - startPos[1] === 0) { return [1, 0]; }
     const ratio = (targetPos[0] - startPos[0])/(targetPos[1] - startPos[1]);
     let yVal = Math.sqrt(1 / (Math.pow(ratio, 2) + 1));
     if (targetPos[1] - startPos[1] < 0) {
       yVal = yVal * (-1);
     }
     const xVal = ratio * yVal;
+    return [xVal, yVal];
+  },
+  escapeAngle: (startPos, predatorPos, targetMove) => {
+    if (predatorPos[1] - startPos[1] === 0) { return [1, 0]; }
+    const ratio = (predatorPos[0] - startPos[0])/(predatorPos[1] - startPos[1]);
+    let yVal = Math.sqrt(1 / (Math.pow(ratio, 2) + 1));
+    if (predatorPos[1] - startPos[1] > 0) {
+      yVal = yVal * (-1);
+    }
+    const xVal = ratio * yVal * (-1);
     return [xVal, yVal];
   }
 };
