@@ -21,7 +21,7 @@ const Util = {
     if (predatorPos[1] - startPos[1] > 0) {
       yVal = yVal * (-1);
     }
-    const xVal = ratio * yVal * (-1);
+    const xVal = ratio * yVal;
     return [xVal, yVal];
   }
 };

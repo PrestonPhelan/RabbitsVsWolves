@@ -185,8 +185,8 @@
 	  }
 	
 	  move() {
-	    this.pos[0] += this.movement[0] * this.speed;
-	    this.pos[1] += this.movement[1] * this.speed;
+	    this.pos[0] += (this.movement[0] * this.speed);
+	    this.pos[1] += (this.movement[1] * this.speed);
 	  }
 	
 	  eat(val) {
@@ -451,7 +451,7 @@
 	    if (predatorPos[1] - startPos[1] > 0) {
 	      yVal = yVal * (-1);
 	    }
-	    const xVal = ratio * yVal * (-1);
+	    const xVal = ratio * yVal;
 	    return [xVal, yVal];
 	  }
 	};
