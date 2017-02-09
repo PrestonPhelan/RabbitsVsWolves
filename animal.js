@@ -8,6 +8,7 @@ class Animal {
     this.food = 5;
     this.alive = true;
     this.removed = false;
+    this.game = options.game;
 
     this.onReproductionCooldown = false;
     this.ReproductionCooldownCounter = 0;

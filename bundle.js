@@ -120,7 +120,7 @@
 	class Prey extends Animal {
 	  constructor(options = {}) {
 	    super(options);
-	    this.speed = 3;
+	    this.speed = 4;
 	    this.radius = 10;
 	    this.color = "#228B22";
 	  }
@@ -154,7 +154,7 @@
 	      closestDistance = null;
 	      let closestMate;
 	      prey.forEach( mate => {
-	        if (mate === this || !mate.alive) {
+	        if (mate === this || !mate.alive || mate.onReproductionCooldown) {
 	          return;
 	        }
 	        let distance = Util.calcDistance(mate.pos, this.pos);
@@ -163,6 +163,11 @@
 	          closestMate = mate;
 	        }
 	      });
+	
+	      if (closestDistance <= this.radius && !closestMate.onReproductionCooldown) {
+	        console.log("Mating");
+	        this.mate();
+	      }
 	
 	      this.movement =
 	        Util.pursuitAngle(this.pos, closestMate.pos, closestMate.movement);
@@ -177,8 +182,16 @@
 	
 	  eaten() {
 	    this.death();
-	    this.movement = [0, 0];
+	    // this.movement = [0, 0];
 	    this.color = "#000000";
+	  }
+	
+	  mate() {
+	    if (this.onReproductionCooldown) { return; }
+	    this.onReproductionCooldown = true;
+	    debugger;
+	    console.log(this.onReproductionCooldown);
+	    this.game.prey.push(new Prey({game: this.game}));
 	  }
 	
 	  update(prey, predators) {
@@ -193,9 +206,15 @@
 	      return;
 	    }
 	
-	    this.getMove(prey, predators);
+	    if (this.onReproductionCooldown) {
+	      this.ReproductionCooldownCounter += 1;
+	      if (this.ReproductionCooldownCounter === 250) {
+	        this.onReproductionCooldown = false;
+	        this.ReproductionCooldownCounter = 0;
+	      }
+	    }
 	
-	    //TODO Death Counter check, remove
+	    this.getMove(prey, predators);
 	
 	    this.move();
 	  }
@@ -218,6 +237,7 @@
 	    this.food = 5;
 	    this.alive = true;
 	    this.removed = false;
+	    this.game = options.game;
 	
 	    this.onReproductionCooldown = false;
 	    this.ReproductionCooldownCounter = 0;
@@ -288,7 +308,7 @@
 	class Predator extends Animal {
 	  constructor(options = {}) {
 	    super(options);
-	    this.speed = 3;
+	    this.speed = 5;
 	    this.radius = 10;
 	    this.color = "#ff0000";
 	
@@ -321,10 +341,10 @@
 	      return;
 	    }
 	
-	    if (this.food > 1) {
+	    if (this.food > 1  && !this.onReproductionCooldown) {
 	      //TODO adjust food as appropriate
 	      predators.forEach( mate => {
-	        if (mate === this || !mate.alive ) {
+	        if (mate === this || !mate.alive || mate.onReproductionCooldown) {
 	          return;
 	        }
 	        let distance = Util.calcDistance(mate.pos, this.pos);
@@ -335,24 +355,37 @@
 	      });
 	    }
 	    //Get target's current position & movement
-	
+	    if (closestDistance <= this.radius && !closestAnimal.onReproductionCooldown) {
+	      console.log("Mating");
+	      this.mate();
+	    }
 	    this.movement =
 	      Util.pursuitAngle(this.pos, closestAnimal.pos, closestAnimal.movement);
 	  }
 	
+	  mate() {
+	    this.onReproductionCooldown = true;
+	    this.game.predators.push(new Predator({game: this.game}));
+	  }
+	
 	  update(prey, predators) {
 	    if (this.removed) { return; }
+	    if (!this.alive) {
+	      this.deathCounter();
+	    }
 	    if (this.starved()) {
 	      this.death();
 	      return;
 	    }
-	
-	    if (!this.alive) {
-	      this.deathCounter();
+	    if (this.onReproductionCooldown) {
+	      this.ReproductionCooldownCounter += 1;
+	      if (this.ReproductionCooldownCounter === 250) {
+	        this.onReproductionCooldown = false;
+	        this.ReproductionCooldownCounter = 0;
+	      }
 	    }
-	    this.getMove(prey, predators);
 	
-	    //TODO Death Counter check, remove
+	    this.getMove(prey, predators);
 	
 	    this.move();
 	  }
