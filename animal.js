@@ -7,6 +7,7 @@ class Animal {
     this.pos = [getRandomInt(Options.DIM_X), getRandomInt(Options.DIM_Y)];
     this.food = 5;
     this.alive = true;
+    this.removed = false;
 
     this.onReproductionCooldown = false;
     this.ReproductionCooldownCounter = 0;
@@ -35,9 +36,12 @@ class Animal {
 
   deathCounter() {
     this.counter += 1;
+    console.log(this.counter);
+    if (this.counter === 50) { this.removed = true; }
   }
 
   draw(ctx) {
+    if (this.removed) { return; }
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(

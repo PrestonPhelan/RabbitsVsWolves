@@ -115,6 +115,7 @@
 
 	const Animal = __webpack_require__(3);
 	const Util = __webpack_require__(9);
+	const Options = __webpack_require__(4);
 	
 	class Prey extends Animal {
 	  constructor(options = {}) {
@@ -129,6 +130,7 @@
 	    let closestDistance;
 	    let closestPredator;
 	    predators.forEach( predator => {
+	      if (!predator.alive) { return; }
 	      let distance = Util.calcDistance(predator.pos, this.pos);
 	      if (!closestDistance || distance < closestDistance) {
 	        closestDistance = distance;
@@ -142,13 +144,17 @@
 	          this.pos,
 	          closestPredator.pos,
 	          closestPredator.movement);
+	          if (this.pos[0] <= this.radius && this.movement[0] < 0) { this.movement[0] = 0; }
+	          else if (this.pos[0] >= Options.DIM_X - this.radius && this.movement[0] > 0) { this.movement[0] = 0; }
+	          if (this.pos[1] <= this.radius && this.movement[1] < 0) { this.movement[1] = 0; }
+	          else if (this.pos[1] >= Options.DIM_Y - this.radius && this.movement[1] > 0) { this.movement[1] = 0; }
 	      return;
 	    } else {
 	      //Else look for closest mate
 	      closestDistance = null;
 	      let closestMate;
 	      prey.forEach( mate => {
-	        if (mate === this) {
+	        if (mate === this || !mate.alive) {
 	          return;
 	        }
 	        let distance = Util.calcDistance(mate.pos, this.pos);
@@ -160,18 +166,33 @@
 	
 	      this.movement =
 	        Util.pursuitAngle(this.pos, closestMate.pos, closestMate.movement);
+	
+	      //Prevent leaving screen
+	      if (this.pos[0] <= this.radius && this.movement[0] < 0) { this.movement[0] = 0; }
+	      else if (this.pos[0] >= Options.DIM_X - this.radius && this.movement[0] > 0) { this.movement[0] = 0; }
+	      if (this.pos[1] <= this.radius && this.movement[1] < 0) { this.movement[1] = 0; }
+	      else if (this.pos[1] >= Options.DIM_Y - this.radius && this.movement[1] > 0) { this.movement[1] = 0; }
 	    }
 	  }
 	
+	  eaten() {
+	    this.death();
+	    this.movement = [0, 0];
+	    this.color = "#000000";
+	  }
+	
 	  update(prey, predators) {
+	    if (this.removed) { return; }
+	    if (!this.alive) {
+	      this.deathCounter();
+	      return;
+	    }
+	
 	    if (this.starved()) {
 	      this.death();
 	      return;
 	    }
 	
-	    if (!this.alive) {
-	      this.deathCounter();
-	    }
 	    this.getMove(prey, predators);
 	
 	    //TODO Death Counter check, remove
@@ -196,6 +217,7 @@
 	    this.pos = [getRandomInt(Options.DIM_X), getRandomInt(Options.DIM_Y)];
 	    this.food = 5;
 	    this.alive = true;
+	    this.removed = false;
 	
 	    this.onReproductionCooldown = false;
 	    this.ReproductionCooldownCounter = 0;
@@ -224,9 +246,12 @@
 	
 	  deathCounter() {
 	    this.counter += 1;
+	    console.log(this.counter);
+	    if (this.counter === 50) { this.removed = true; }
 	  }
 	
 	  draw(ctx) {
+	    if (this.removed) { return; }
 	    ctx.fillStyle = this.color;
 	    ctx.beginPath();
 	    ctx.arc(
@@ -263,7 +288,7 @@
 	class Predator extends Animal {
 	  constructor(options = {}) {
 	    super(options);
-	    this.speed = 2;
+	    this.speed = 3;
 	    this.radius = 10;
 	    this.color = "#ff0000";
 	
@@ -271,11 +296,16 @@
 	    this.destination = null;
 	  }
 	
+	  eating() {
+	
+	  }
+	
 	  getMove(prey, predators) {
 	    let closestDistance;
 	    let closestAnimal;
 	
 	    prey.forEach( food => {
+	      if (!food.alive) { return; }
 	      let distance = Util.calcDistance(food.pos, this.pos);
 	      if (!closestDistance || distance < closestDistance) {
 	        closestDistance = distance;
@@ -283,10 +313,18 @@
 	      }
 	    });
 	
+	    if (closestDistance <= this.radius) {
+	      console.log("Eat");
+	      this.eating();
+	      closestAnimal.eaten();
+	      this.movement = [0, 0];
+	      return;
+	    }
+	
 	    if (this.food > 1) {
 	      //TODO adjust food as appropriate
 	      predators.forEach( mate => {
-	        if (mate === this) {
+	        if (mate === this || !mate.alive ) {
 	          return;
 	        }
 	        let distance = Util.calcDistance(mate.pos, this.pos);
@@ -303,6 +341,7 @@
 	  }
 	
 	  update(prey, predators) {
+	    if (this.removed) { return; }
 	    if (this.starved()) {
 	      this.death();
 	      return;

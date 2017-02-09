@@ -4,7 +4,7 @@ const Util = require('./util');
 class Predator extends Animal {
   constructor(options = {}) {
     super(options);
-    this.speed = 2;
+    this.speed = 3;
     this.radius = 10;
     this.color = "#ff0000";
 
@@ -12,11 +12,16 @@ class Predator extends Animal {
     this.destination = null;
   }
 
+  eating() {
+
+  }
+
   getMove(prey, predators) {
     let closestDistance;
     let closestAnimal;
 
     prey.forEach( food => {
+      if (!food.alive) { return; }
       let distance = Util.calcDistance(food.pos, this.pos);
       if (!closestDistance || distance < closestDistance) {
         closestDistance = distance;
@@ -24,10 +29,18 @@ class Predator extends Animal {
       }
     });
 
+    if (closestDistance <= this.radius) {
+      console.log("Eat");
+      this.eating();
+      closestAnimal.eaten();
+      this.movement = [0, 0];
+      return;
+    }
+
     if (this.food > 1) {
       //TODO adjust food as appropriate
       predators.forEach( mate => {
-        if (mate === this) {
+        if (mate === this || !mate.alive ) {
           return;
         }
         let distance = Util.calcDistance(mate.pos, this.pos);
@@ -44,6 +57,7 @@ class Predator extends Animal {
   }
 
   update(prey, predators) {
+    if (this.removed) { return; }
     if (this.starved()) {
       this.death();
       return;
